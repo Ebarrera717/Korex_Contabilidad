@@ -1,0 +1,15 @@
+{
+  "system": "Korex_Contabilidad",
+  "version": "1.0.0",
+  "buildDate": "2026-09-23T23:28:35.637Z",
+  "databases": {
+    "postgresql": {
+      "tables": 6,
+      "procedures": 40,
+      "functions": 41
+    },
+    "sqlserver": {
+      "files": 12
+    }
+  }
+}
