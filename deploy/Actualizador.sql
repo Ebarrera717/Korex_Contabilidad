@@ -1,6 +1,6 @@
 -- ============================================================================
 -- KOREX_CONTABILIDAD - SCRIPT CONSOLIDADO DE ACTUALIZACION (POSTGRESQL)
--- GENERADO AUTOMATICAMENTE: 2026-09-25T10:49:16.221Z
+-- GENERADO AUTOMATICAMENTE: 2026-09-25T11:03:35.186Z
 -- ============================================================================
 
 -- --- TABLA: 01_Accounting_Masters_Tables.sql ---

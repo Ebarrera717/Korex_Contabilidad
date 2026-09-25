@@ -187,17 +187,26 @@ export default function SettingsPage() {
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
+      let data: any = {};
+      const rawText = await res.text();
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = { error: rawText || `Error HTTP ${res.status}` };
+      }
 
       if (res.ok && data.success) {
         setShowUserModal(false);
         loadUsersAndRoles();
-        alert(editingUser ? 'Usuario actualizado exitosamente.' : '¡Usuario creado exitosamente!');
+        alert(editingUser ? '✅ Usuario actualizado exitosamente.' : '✅ ¡Usuario creado exitosamente!');
       } else {
-        alert(`Error: ${data.error || 'No fue posible guardar el usuario.'}`);
+        const msg = data.message || data.error || 'No fue posible guardar el usuario.';
+        const detail = data.detail ? `\n\nDetalle técnico: ${data.detail}` : '';
+        const suggestion = data.suggestion ? `\n\nSugerencia: ${data.suggestion}` : '';
+        alert(`❌ Error al guardar usuario:\n${msg}${detail}${suggestion}`);
       }
-    } catch (e) {
-      alert('Error de conexión al guardar el usuario.');
+    } catch (e: any) {
+      alert(`❌ Error de conexión al guardar el usuario:\n${e?.message || e}`);
     }
   };
 
@@ -212,13 +221,21 @@ export default function SettingsPage() {
         body: JSON.stringify({ isActive: !user.isActive })
       });
 
-      if (res.ok) {
+      let data: any = {};
+      const rawText = await res.text();
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = { error: rawText || `Error HTTP ${res.status}` };
+      }
+
+      if (res.ok && data.success) {
         loadUsersAndRoles();
       } else {
-        alert('Error al cambiar el estado del usuario.');
+        alert(`❌ Error al cambiar el estado del usuario:\n${data.message || data.error || 'Operación no completada'}`);
       }
-    } catch (e) {
-      alert('Error de conexión.');
+    } catch (e: any) {
+      alert(`❌ Error de conexión:\n${e?.message || e}`);
     }
   };
 
@@ -235,14 +252,21 @@ export default function SettingsPage() {
         body: JSON.stringify({ periodId })
       });
 
-      if (res.ok) {
+      let data: any = {};
+      const rawText = await res.text();
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = { error: rawText || `Error HTTP ${res.status}` };
+      }
+
+      if (res.ok && (data.success !== false)) {
         loadPeriods();
       } else {
-        const err = await res.json();
-        alert(`Error al cambiar estado del período: ${err.message || err.error}`);
+        alert(`❌ Error al cambiar estado del período:\n${data.message || data.error || 'Operación fallida'}`);
       }
-    } catch (e) {
-      alert('Error de conexión');
+    } catch (e: any) {
+      alert(`❌ Error de conexión:\n${e?.message || e}`);
     }
   };
 
@@ -257,15 +281,22 @@ export default function SettingsPage() {
         body: JSON.stringify({ year: parseInt(year, 10) })
       });
 
-      if (res.ok) {
-        alert('¡Cierre Anual ejecutado exitosamente! Comprobante de cierre CZ generado y asentado.');
+      let data: any = {};
+      const rawText = await res.text();
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = { error: rawText || `Error HTTP ${res.status}` };
+      }
+
+      if (res.ok && (data.success !== false)) {
+        alert('🎉 ¡Cierre Anual ejecutado exitosamente! Comprobante de cierre CZ generado y asentado.');
         loadPeriods();
       } else {
-        const err = await res.json();
-        alert(`Error al ejecutar cierre anual: ${err.message || err.error}`);
+        alert(`❌ Error al ejecutar cierre anual:\n${data.message || data.error || 'Operación fallida'}`);
       }
-    } catch (e) {
-      alert('Error de conexión');
+    } catch (e: any) {
+      alert(`❌ Error de conexión:\n${e?.message || e}`);
     }
   };
 
