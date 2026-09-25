@@ -25,6 +25,7 @@ import {
   Shield,
   X
 } from 'lucide-react';
+import LicenseStatusCard from '@/components/LicenseStatusCard';
 
 interface UserItem {
   id: number;
@@ -289,6 +290,9 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Tarjeta Permanente de Estado de Licencia */}
+      <LicenseStatusCard />
 
       {/* Tabs */}
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
