@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -23,7 +23,8 @@ import {
   Database,
   Calendar,
   Menu as MenuIcon,
-  X
+  X,
+  UserCheck
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -40,17 +41,52 @@ const MENU_ITEMS = [
   { href: '/dashboard/taxes', label: 'Impuestos y DIAN (Exógena)', icon: Percent },
   { href: '/dashboard/interfaces', label: 'Interfaces e Importación', icon: ArrowLeftRight },
   { href: '/dashboard/manual', label: 'Manual Operativo', icon: HelpCircle },
-  { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
+  { href: '/dashboard/settings', label: 'Configuración y Usuarios', icon: Settings },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState({
+    name: 'Administrador del Sistema',
+    email: 'admin@korex.com.co',
+    initials: 'AD'
+  });
 
-  const handleLogout = () => {
+  useEffect(() => {
+    // Leer datos del usuario desde cookies
+    const cookies = document.cookie.split(';');
+    let name = 'Administrador del Sistema';
+    let email = 'admin@korex.com.co';
+
+    for (const cookie of cookies) {
+      const [k, v] = cookie.trim().split('=');
+      if (k === 'user_name' && v) name = decodeURIComponent(v);
+      if (k === 'user_email' && v) email = decodeURIComponent(v);
+    }
+
+    const initials = name
+      .split(' ')
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() || 'AD';
+
+    setCurrentUser({ name, email, initials });
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {
+      console.error(e);
+    }
     document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'user_name=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'user_email=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     router.push('/login');
+    router.refresh();
   };
 
   return (
@@ -103,11 +139,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 truncate">
               <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs border border-blue-500/30">
-                AD
+                {currentUser.initials}
               </div>
               <div className="truncate">
-                <p className="text-xs font-semibold text-white truncate">Administrador</p>
-                <p className="text-[10px] text-slate-500 truncate">admin@korex.com.co</p>
+                <p className="text-xs font-semibold text-white truncate">{currentUser.name}</p>
+                <p className="text-[10px] text-slate-500 truncate">{currentUser.email}</p>
               </div>
             </div>
             <button
