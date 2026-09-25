@@ -1,0 +1,161 @@
+{
+  "version": "2.0.0",
+  "timestamp": "2026-09-25T10:48:11.094Z",
+  "phase": "pre-build",
+  "targetEngine": "all",
+  "items": [
+    {
+      "category": "Prisma Schema",
+      "component": "model Account",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model ThirdParty",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model JournalEntry",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model JournalEntryItem",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model CashBox",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model TreasuryMovement",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model ReceivableInvoice",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model PayableInvoice",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model FixedAsset",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model FiscalPeriod",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Prisma Schema",
+      "component": "model Company",
+      "status": "✅ OK",
+      "detail": "Modelo definido correctamente"
+    },
+    {
+      "category": "Stored Procedures",
+      "component": "spComprobanteContabilizar.sql",
+      "status": "✅ OK",
+      "detail": "Procedimiento presente en SQL/Procedure/"
+    },
+    {
+      "category": "Stored Procedures",
+      "component": "spComprobanteReversar.sql",
+      "status": "✅ OK",
+      "detail": "Procedimiento presente en SQL/Procedure/"
+    },
+    {
+      "category": "Stored Procedures",
+      "component": "spCierreAnual.sql",
+      "status": "✅ OK",
+      "detail": "Procedimiento presente en SQL/Procedure/"
+    },
+    {
+      "category": "Stored Procedures",
+      "component": "spTesoreriaIngresoCrear.sql",
+      "status": "✅ OK",
+      "detail": "Procedimiento presente en SQL/Procedure/"
+    },
+    {
+      "category": "Stored Procedures",
+      "component": "spTesoreriaEgresoCrear.sql",
+      "status": "✅ OK",
+      "detail": "Procedimiento presente en SQL/Procedure/"
+    },
+    {
+      "category": "Stored Procedures",
+      "component": "spCarteraReciboCruzar.sql",
+      "status": "✅ OK",
+      "detail": "Procedimiento presente en SQL/Procedure/"
+    },
+    {
+      "category": "Stored Procedures",
+      "component": "spProveedorEgresoCruzar.sql",
+      "status": "✅ OK",
+      "detail": "Procedimiento presente en SQL/Procedure/"
+    },
+    {
+      "category": "Stored Procedures",
+      "component": "spActivoFijoDepreciarPeriodo.sql",
+      "status": "✅ OK",
+      "detail": "Procedimiento presente en SQL/Procedure/"
+    },
+    {
+      "category": "Stored Procedures",
+      "component": "spBatchImportComprobantes.sql",
+      "status": "✅ OK",
+      "detail": "Procedimiento presente en SQL/Procedure/"
+    },
+    {
+      "category": "Seguridad .env",
+      "component": "RELEASE_KOREX",
+      "status": "ℹ️ INFO",
+      "detail": "Carpeta RELEASE_KOREX limpia"
+    },
+    {
+      "category": "Inno Setup",
+      "component": "installer.iss",
+      "status": "✅ OK",
+      "detail": "Script de empaquetado para postgres disponible"
+    },
+    {
+      "category": "Inno Setup",
+      "component": "updater.iss",
+      "status": "✅ OK",
+      "detail": "Script de empaquetado para postgres disponible"
+    },
+    {
+      "category": "Inno Setup",
+      "component": "installer_sqlserver.iss",
+      "status": "✅ OK",
+      "detail": "Script de empaquetado para sqlserver disponible"
+    },
+    {
+      "category": "Inno Setup",
+      "component": "updater_sqlserver.iss",
+      "status": "✅ OK",
+      "detail": "Script de empaquetado para sqlserver disponible"
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "status": "GO"
+}
