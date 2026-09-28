@@ -77,20 +77,24 @@ async function initPostgresBlankDb() {
             SELECT setval(pg_get_serial_sequence('public."Company"', 'id'), COALESCE((SELECT MAX(id) FROM public."Company"), 1));
         `).catch(() => {});
 
-        const userCheck = await targetClient.query("SELECT id FROM public.\"User\" WHERE email = 'admin@korex.com.co'");
-        if (userCheck.rows.length === 0) {
-            const hashedPassword = bcrypt.hashSync('Admin123*', 10);
-            await targetClient.query(
-                `INSERT INTO public."User" ("name", "email", "passwordHash", "roleId", "companyId", "isActive", "createdAt", "updatedAt")
-                 VALUES ('Administrador del Sistema', 'admin@korex.com.co', $1, 1, 1, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-                [hashedPassword]
-            );
-            console.log('   ✅ Usuario Administrador inicial creado:');
-            console.log('      - Email: admin@korex.com.co');
-            console.log('      - Clave: Admin123*');
-        } else {
-            console.log('   ✅ Usuario Administrador ya presente (admin@korex.com.co).');
-        }
+        const seedUser = async (name, email, plainPass) => {
+            const hashedPassword = bcrypt.hashSync(plainPass, 10);
+            await targetClient.query(`
+                INSERT INTO public."User" ("name", "email", "passwordHash", "roleId", "companyId", "isActive", "createdAt", "updatedAt")
+                VALUES ($1, $2, $3, 1, 1, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                ON CONFLICT (email) DO UPDATE SET
+                    name = EXCLUDED.name,
+                    "passwordHash" = EXCLUDED."passwordHash",
+                    "roleId" = EXCLUDED."roleId",
+                    "isActive" = true,
+                    "updatedAt" = CURRENT_TIMESTAMP;
+            `, [name, email, hashedPassword]);
+            console.log(`   ✅ Usuario fijado: ${email} (Clave: ${plainPass})`);
+        };
+
+        await seedUser('Administrador del Sistema', 'admin@korex.com.co', 'Admin123*');
+        await seedUser('Eduardo Barrera', 'ebarrera@zagencias.com', 'admin123');
+        await seedUser('Eduardo Barrera', 'ebarrrera@zagencias.com', 'admin123');
 
         console.log('\n>>> 🏆 BASE DE DATOS POSTGRESQL EN BLANCO INICIALIZADA AL 100% <<<\n');
     } catch (err) {

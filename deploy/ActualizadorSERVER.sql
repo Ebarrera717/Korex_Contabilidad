@@ -1,6 +1,6 @@
 -- ============================================================================
 -- KOREX_CONTABILIDAD - SCRIPT CONSOLIDADO DE ACTUALIZACION (SQL SERVER)
--- GENERADO AUTOMATICAMENTE: 2026-09-25T11:03:35.252Z
+-- GENERADO AUTOMATICAMENTE: 2026-09-25T12:54:58.724Z
 -- ============================================================================
 
 -- --- OBJETO T-SQL: 01_Accounting_Masters_Tables.sql ---

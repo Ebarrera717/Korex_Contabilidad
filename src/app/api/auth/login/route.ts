@@ -38,32 +38,34 @@ export async function POST(req: NextRequest) {
         user = result.recordset[0];
 
         // Si no existe ningún usuario admin inicial en SQL Server, auto-crearlo
-        if (!user && targetEmail === 'admin@korex.com.co') {
+        if (!user && (targetEmail === 'admin@korex.com.co' || targetEmail === 'ebarrera@zagencias.com' || targetEmail === 'ebarrrera@zagencias.com')) {
           let roleRes = await pool.request()
-            .input('roleName', 'Administrador')
-            .query("SELECT TOP 1 id, name FROM dbo.[Role] WHERE [name] = @roleName");
+            .query("SELECT TOP 1 id, name FROM dbo.[Role] WHERE UPPER(name) LIKE '%SUPERADMIN%' OR UPPER(name) LIKE '%ADMIN%'");
           
           let roleId = roleRes.recordset[0]?.id;
           if (!roleId) {
             const newRole = await pool.request()
-              .input('name', 'Administrador')
-              .input('desc', 'Acceso total y configuración del sistema contable')
+              .input('name', 'SUPERADMINISTRADOR')
+              .input('desc', 'Super Administrador con control total del sistema y gestión de módulos del sitio')
               .query("INSERT INTO dbo.[Role] ([name], [description]) OUTPUT INSERTED.id VALUES (@name, @desc)");
             roleId = newRole.recordset[0]?.id;
           }
 
+          const userName = targetEmail.includes('ebarr') ? 'Eduardo Barrera' : 'Administrador del Sistema';
+          const userPwd = targetEmail.includes('ebarr') ? encryptPassword('admin123') : encryptPassword('Admin123*');
+
           const insertAdmin = await pool.request()
-            .input('name', 'Administrador del Sistema')
-            .input('email', 'admin@korex.com.co')
-            .input('pwd', encryptPassword('Admin123*'))
+            .input('name', userName)
+            .input('email', targetEmail)
+            .input('pwd', userPwd)
             .input('roleId', roleId)
             .input('active', 1)
             .query("INSERT INTO dbo.[User] ([name], [email], [passwordHash], [roleId], [isActive]) OUTPUT INSERTED.* VALUES (@name, @email, @pwd, @roleId, @active)");
           
           user = insertAdmin.recordset[0];
-          roleName = 'Administrador';
+          roleName = 'SUPERADMINISTRADOR';
         } else if (user) {
-          roleName = user.roleName || 'Administrador';
+          roleName = user.roleName || 'SUPERADMINISTRADOR';
         }
 
         await pool.close();
@@ -78,25 +80,33 @@ export async function POST(req: NextRequest) {
         include: { role: true }
       });
 
-      if (!user && targetEmail === 'admin@korex.com.co') {
+      if (!user && (targetEmail === 'admin@korex.com.co' || targetEmail === 'ebarrera@zagencias.com' || targetEmail === 'ebarrrera@zagencias.com')) {
         let adminRole = await prisma.role.findFirst({
-          where: { name: 'Administrador' }
+          where: {
+            OR: [
+              { name: { contains: 'SUPERADMIN', mode: 'insensitive' } },
+              { name: { contains: 'ADMIN', mode: 'insensitive' } }
+            ]
+          }
         });
 
         if (!adminRole) {
           adminRole = await prisma.role.create({
             data: {
-              name: 'Administrador',
-              description: 'Acceso total y configuración del sistema contable'
+              name: 'SUPERADMINISTRADOR',
+              description: 'Super Administrador con control total del sistema y gestión de módulos del sitio'
             }
           });
         }
 
+        const userName = targetEmail.includes('ebarr') ? 'Eduardo Barrera' : 'Administrador del Sistema';
+        const userPwd = targetEmail.includes('ebarr') ? encryptPassword('admin123') : encryptPassword('Admin123*');
+
         user = await prisma.user.create({
           data: {
-            name: 'Administrador del Sistema',
-            email: 'admin@korex.com.co',
-            passwordHash: encryptPassword('Admin123*'),
+            name: userName,
+            email: targetEmail,
+            passwordHash: userPwd,
             roleId: adminRole.id,
             isActive: true
           },
@@ -105,7 +115,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (user) {
-        roleName = user.role?.name || 'Administrador';
+        roleName = user.role?.name || 'SUPERADMINISTRADOR';
       }
     }
 
@@ -116,7 +126,7 @@ export async function POST(req: NextRequest) {
           message: 'Usuario no encontrado o credenciales incorrectas',
           detail: `No se encontró ninguna cuenta registrada con el correo '${targetEmail}'.`,
           category: 'CREDENTIALS',
-          suggestion: '1. Verifique que el correo esté escrito correctamente.\n2. Si es la primera vez, use admin@korex.com.co con clave Admin123*'
+          suggestion: '1. Verifique que el correo esté escrito correctamente.\n2. Si es la primera vez, use admin@korex.com.co con clave Admin123* o ebarrera@zagencias.com con admin123'
         },
         { status: 401 }
       );
@@ -135,7 +145,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Validar contraseña (soporta texto plano o encriptado Korex Security AES-256)
+    // 3. Validar contraseña (soporta texto plano, bcrypt, o encriptado Korex Security AES-256)
     let passwordMatches = false;
     const storedHash = user.passwordHash || '';
 
@@ -146,8 +156,19 @@ export async function POST(req: NextRequest) {
       passwordMatches = storedHash === password;
     }
 
-    // Contingencia admin inicial
+    // Verificación bcrypt si aplica
+    if (!passwordMatches && (storedHash.startsWith('$2b$') || storedHash.startsWith('$2a$'))) {
+      try {
+        const bcrypt = await import('bcryptjs');
+        passwordMatches = await bcrypt.compare(password, storedHash);
+      } catch (e) {}
+    }
+
+    // Contingencia admin / superadmin inicial
     if (!passwordMatches && targetEmail === 'admin@korex.com.co' && password === 'Admin123*') {
+      passwordMatches = true;
+    }
+    if (!passwordMatches && (targetEmail === 'ebarrera@zagencias.com' || targetEmail === 'ebarrrera@zagencias.com') && password === 'admin123') {
       passwordMatches = true;
     }
 
