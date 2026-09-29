@@ -39,16 +39,16 @@ function parsePgUrl(url) {
 }
 
 function parseSqlUrl(url) {
-    let host = 'localhost', port = '1433', db = 'Korex_Contabilidad_sql', user = 'zeusagencias', pass = 'zzeusagencias';
+    let host = 'ZEUSAGENCIAS10', port = '1433', db = 'Korex_Contabilidad', user = 'zeusagencias', pass = 'zzeusagencias';
     if (!url) return { host, port, db, user, pass };
     try {
         let clean = url.replace(/["']/g, '').replace(/^(sqlserver|mssql):\/\//i, '');
         let hostPortPart = clean.split(';')[0];
         if (hostPortPart.includes(':')) {
-            host = hostPortPart.split(':')[0] || 'localhost';
+            host = hostPortPart.split(':')[0] || 'ZEUSAGENCIAS10';
             port = hostPortPart.split(':')[1] || '1433';
         } else {
-            host = hostPortPart || 'localhost';
+            host = hostPortPart || 'ZEUSAGENCIAS10';
         }
         const params = clean.split(';');
         for (const p of params) {
