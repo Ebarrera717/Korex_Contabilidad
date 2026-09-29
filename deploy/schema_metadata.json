@@ -1,7 +1,7 @@
 {
   "system": "Korex_Contabilidad",
   "version": "1.0.0",
-  "buildDate": "2026-09-25T12:54:58.854Z",
+  "buildDate": "2026-09-29T17:34:23.273Z",
   "databases": {
     "postgresql": {
       "tables": 6,
