@@ -1,5 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
+chcp 65001 > nul
 cd /d "%~dp0"
 set "ROOT_DIR=%~dp0"
 title Korex_Contabilidad - Servidor de Testing y Desarrollo
@@ -14,30 +15,36 @@ echo ================================================================
 echo      KOREX_CONTABILIDAD - ENTORNO DE TESTING Y DESARROLLO
 echo ================================================================
 echo.
-echo  Seleccione el motor de base de datos para testing:
-echo.
-echo  [1] PostgreSQL (Base Local Korex_contabilidad_pg)
-echo  [2] SQL Server (Base Local Korex_Contabilidad_sql)
+echo  [1] Continuar con la configuracion actual de .env (Recomendado)
+echo  [2] Activar SQL Server (Sin alterar credenciales de .env)
+echo  [3] Activar PostgreSQL (Sin alterar credenciales de .env)
+echo  [4] Abrir Asistente de Configuracion (.env)
 echo.
 set "DB_CHOICE=1"
-set /p "DB_CHOICE=Seleccione motor [1 o 2, por defecto 1]: "
+set /p "DB_CHOICE=Seleccione una opcion [1-4, por defecto 1]: "
 
-if "%DB_CHOICE%"=="2" goto USE_SQLSERVER
-goto USE_POSTGRES
+if "%DB_CHOICE%"=="2" goto SWITCH_SQLSERVER
+if "%DB_CHOICE%"=="3" goto SWITCH_POSTGRES
+if "%DB_CHOICE%"=="4" goto OPEN_CONFIG
+goto START_CURRENT
 
-:USE_SQLSERVER
+:SWITCH_SQLSERVER
 echo.
-echo MODO SELECCIONADO: SQL Server (Korex_Contabilidad_sql)
+echo Cambiando motor a SQL Server...
 call node "%ROOT_DIR%scripts\select_db_provider.js" sqlserver
-goto START_PRISMA
+goto START_CURRENT
 
-:USE_POSTGRES
+:SWITCH_POSTGRES
 echo.
-echo MODO SELECCIONADO: PostgreSQL (Korex_contabilidad_pg)
+echo Cambiando motor a PostgreSQL...
 call node "%ROOT_DIR%scripts\select_db_provider.js" postgresql
-goto START_PRISMA
+goto START_CURRENT
 
-:START_PRISMA
+:OPEN_CONFIG
+call "%ROOT_DIR%Configurar_Env.bat"
+goto START_CURRENT
+
+:START_CURRENT
 echo.
 echo [1/3] Consolidando esquemas y actualizadores...
 call node "%ROOT_DIR%deploy\gen_schema_json.js"
